@@ -2,14 +2,16 @@ module.exports = function solveSudoku(matrix) {
   // your solution
   //return solve(matrix) ? matrix : false;
   let ans = solve(matrix);
-  if (ans) return matrix;
+  //printMatrix(matrix);
+  return matrix;
 }
-let row, col;
 
+var row = 0, col = 0;
 function solve(matrix) {
+  //let row = 0, col = 0;
   if (!findUnassignedLocation(matrix)) return true;
-  for (let num = 1; num < 10; num++) {
-    if (isSafe(matrix, num)) {
+  for (let num = 1; num <= 9; num++) {
+    if (isSafe(matrix, row, col, num)) {
       matrix[row][col] = num;
       if (solve(matrix)) {
         return true;
@@ -17,20 +19,23 @@ function solve(matrix) {
       matrix[row][col] = 0;
     }
   }
-
   return false;
 }
 
 function findUnassignedLocation(matrix) {
-  for (row = 0; row < matrix.length; row++) {
-    for (col = 0; col < matrix.length; col++) {
-      if (matrix[row][col] == 0) return true;
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix.length; j++) {
+      if (matrix[i][j] == 0) {
+        row = i;
+        col = j;
+        return true;
+      }
     }
   }
   return false;
 }
 
-function isUsedInCol(matrix, num) {
+function isUsedInCol(matrix, col, num) {
   for (let i = 0; i < matrix.length; i++) {
     if (matrix[i][col] == num) {
       return true;
@@ -39,7 +44,7 @@ function isUsedInCol(matrix, num) {
   return false;
 }
 
-function isUsedInRow(matrix, num) {
+function isUsedInRow(matrix, row, num) {
   for (let i = 0; i < matrix.length; i++) {
     if (matrix[row][i] == num) {
       return true;
@@ -48,17 +53,23 @@ function isUsedInRow(matrix, num) {
   return false;
 }
 
-function isUsedInBox(matrix, num) {
+function isUsedInBox(matrix, new_row, new_col, num) {
   for (let i = 0; i < 3; i++) {
     for (let j = 0; j < 3; j++) {
-      if (matrix[i + row][j + col] == num) return true;
+      if (matrix[i + new_row][j + new_col] == num) return true;
     }
   }
   return false;
 }
 
-function isSafe(matrix, num) {
-  return (!isUsedInRow(matrix, num) &&
-    !isUsedInCol(matrix, num) &&
-    !isUsedInBox(matrix, num)) ? true : false;
+function isSafe(matrix, row, col, num) {
+  return (!isUsedInRow(matrix, row, num) &&
+    !isUsedInCol(matrix, col, num) &&
+    !isUsedInBox(matrix, (row - row % 3), (col - col % 3), num)) &&
+    (matrix[row][col] == 0);
+}
+function printMatrix(matrix) {
+  for (let i = 0; i < matrix.length; i++) {
+    console.log(matrix[i]);
+  }
 }
